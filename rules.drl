@@ -1,0 +1,9 @@
+//12312
+rule "undefined"
+    when
+        Applicant(experienceInYears > 10)
+        Applicant(currentSalary > 1000000 && currentSalary <=
+         2500000)
+    then
+        suggestedRole.setRole("Manager");
+end

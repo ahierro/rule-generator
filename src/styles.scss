@@ -1,1 +1,39 @@
 /* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+
+.my-special-section {
+  $special-primary: mat.define-palette(mat.$orange-palette);
+  $special-accent: mat.define-palette(mat.$brown-palette);
+  $special-theme: mat.define-dark-theme((
+    color: (primary: $special-primary, accent: $special-accent),
+  ));
+
+  @include mat.button-color($special-theme);
+}
+
+$my-primary: mat.define-palette(mat.$teal-palette, 200);
+$my-accent: mat.define-palette(mat.$cyan-palette, A200, A100, A400);
+
+// The "warn" palette is optional and defaults to red if not specified.
+$my-warn: mat.define-palette(mat.$red-palette);
+
+$my-theme: mat.define-dark-theme((
+  color: (
+    primary: $my-primary,
+    accent: $my-accent,
+    warn: $my-warn,
+  )
+));
+$my-accent: #80cbc4;
+// Emit theme-dependent styles for common features used across multiple components.
+@include mat.core-theme($my-theme);
+
+// Emit styles for MatButton based on `$my-theme`. Because the configuration
+// passed to `define-light-theme` omits typography, `button-theme` will not
+// emit any typography styles.
+@include mat.button-theme($my-theme);
+@include mat.all-component-themes($my-theme);
