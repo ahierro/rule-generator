@@ -86,7 +86,7 @@ rule "${rule.name}"
     then
         $sri.setStc("4");
         $sri.setMessage("ASDAS");
-        retract($sri):
+        retract($sri);
 end`
   }
 
