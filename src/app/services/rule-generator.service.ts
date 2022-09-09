@@ -60,7 +60,7 @@ rule "${rule.name}"
             $provider : providerId == "",
             $mService : medicalService == "HOSPITAL",
             $provider : providerCode == "",
-            $benefits : edDalMaps != null
+            $benefits : ebDalMaps != null
         )
 
         DalMap(
