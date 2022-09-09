@@ -107,9 +107,9 @@ end`
       return '';
     }
     if (ded) {
-      return "test.assertDedApplies();";
+      return "test.assertAllDedApplies();";
     } else {
-      return "test.assertDedApplies(false);";
+      return "test.assertAllDedApplies(false);";
     }
   }
 
