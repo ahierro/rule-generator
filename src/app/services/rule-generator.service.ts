@@ -92,24 +92,36 @@ end`
 
   generateTest(expectedResults: ExpectedResults): string {
     const ded = this.getDed(expectedResults.ded);
+    const stc = this.getStc(expectedResults.stc);
+
     return `public IRunnableTest test${expectedResults.ticketNumber}(){
   RunnableTest test = new RunnableJsonTest();
   test.setTestId("${expectedResults.ticketNumber}");
+
   test.assertAllCopay(${expectedResults.copay});
-  test.assertAllCoinsurance(${expectedResults.coins});
-  ${ded}
+  test.assertAllCoinsurance(${expectedResults.coins});${ded} ${stc}
+
   return test;
 }`;
   }
-
+  private getStc(stc: string) {
+    if (!!stc) {
+      return `
+  test.assertAllStc("${stc}");`;
+    }else{
+      return '';
+    }
+  }
   private getDed(ded: boolean) {
     if (ded == undefined) {
       return '';
     }
     if (ded) {
-      return "test.assertAllDedApplies();";
+      return `
+  test.assertAllDedApplies();`;
     } else {
-      return "test.assertAllDedApplies(false);";
+      return `
+  test.assertAllDedApplies(false);`;
     }
   }
 

@@ -21,6 +21,7 @@ export class AppComponent implements OnInit {
       ticketNumber: new FormControl('', [Validators.required]),
       copay: new FormControl(''),
       coins: new FormControl(''),
+      stc: new FormControl(''),
       ded: new FormControl('')
     });
   }
@@ -46,6 +47,7 @@ export class AppComponent implements OnInit {
         ticketNumber: this.ruleForm.value.ticketNumber,
         copay: this.ruleForm.value.copay,
         coins: this.ruleForm.value.coins,
+        stc: this.ruleForm.value.stc,
         ded
       } as ExpectedResults;
       this.test = this.ruleGeneratorService.generateTest(expectedResults);

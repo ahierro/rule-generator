@@ -22,6 +22,12 @@
         </mat-form-field>
       </div>
       <div class="row">
+        <mat-form-field appearance="fill" class="col">
+          <mat-label>STC</mat-label>
+          <input formControlName="stc" matInput autocomplete="off">
+        </mat-form-field>
+      </div>
+      <div class="row">
         <mat-radio-group formControlName="ded">
           <mat-radio-button value="true">Ded Applies </mat-radio-button>
           <mat-radio-button value="false">Ded Not Applies </mat-radio-button>
@@ -30,11 +36,13 @@
       </div>
     </div>
   </form>
-  <div>
-    <button (click)="generateTest()" mat-raised-button color="primary">Generar Test</button>
-  </div>
-  <div>
-    <button (click)="generateRule()" mat-raised-button color="primary">Generar Regla</button>
+  <div class="actions">
+    <div>
+      <button (click)="generateTest()" mat-raised-button color="primary">Generar Test</button>
+    </div>
+    <div>
+      <button (click)="generateRule()" mat-raised-button color="primary">Generar Regla</button>
+    </div>
   </div>
   <div>
     <pre>{{test}}</pre>
