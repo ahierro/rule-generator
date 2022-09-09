@@ -75,7 +75,7 @@ rule "${rule.name}"
 
         $benefit : DalMap(
             $stc : this["SvcTypeCode"] == "4",
-            $bic : this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.Copayment.code),
+            $bic : this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.CoPayment.code),
             $inNetwork : this["InNetworkInd"] == "Y",
             $msg : this["ALLMSG"] == "",
             $copay : this["BnftAmt"] != null ||
