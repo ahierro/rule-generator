@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ExpectedResults} from "../model/expectedResults";
 import {Rule} from "../model/rule";
+import {RuleCondition} from "../model/rule-condition";
 
 @Injectable({
   providedIn: 'root'
@@ -46,46 +47,41 @@ export class RuleGeneratorService {
   }
 
   generateRule(rule: Rule): string {
+    let stcResolutionInput:string[] = [];
+    if(rule.ruleConditions && rule.ruleConditions.length){
+      stcResolutionInput = rule.ruleConditions.filter(ruleCond => ruleCond.conditionType == "StcResolutionInput")
+        .map(ruleCond => this.getCommonCondition(ruleCond.fieldName,ruleCond.value,ruleCond.isNumber,ruleCond.negate))
+
+    }
+    const stcResolutionInputStr = stcResolutionInput.join(`,
+          `);
+    const stc = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'stc');
+    const message = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'message');
+    const allMsg = this.getAllMsg(message);
+    const setMsg = this.getSetMsg(message);
+    const inNetworkInd = this.getInNetWork(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'inNetworkInd'));
+    const planDesc = this.getPlanDesc(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'planDesc'));
+    const memberNum = this.getMemberNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'memberNum'));
+
     return `//${rule.ticketNumber}
 rule "${rule.name}"
     when
         $sri : StcResolutionInput(
-            $episode : episode != null,
-            $custAbbr : episode ["CustomerAbbr"] == "ASD",
-            $payer : payerId == "ASD",
-            $recoPayerId : recoPayerId == "ASD",
-            $revCode : revCode == 121,
-            $providerType : providerType == "HOSPITAL",
-            $pType : patientType == "HOSPITAL",
-            $provider : providerId == "",
-            $mService : medicalService == "HOSPITAL",
-            $provider : providerCode == "",
-            $benefits : ebDalMaps != null
+           $benefits : ebDalMaps != null,
+           $episode : episode != null,
+           $custAbbr : episode ["CustomerAbbr"] ${this.formatFieldValue(rule.customerAbbr,false,false)},
+          ${stcResolutionInputStr}
         )
-
-        DalMap(
-            $memNum : this["EPISODE_INSURANCE.MemberNum"] == ""
-        )
-
-        DalMap(
-            this["SvcTypeCode"] == "30",
-            this["BnftInfoCode"] == BenefitTypeCode.ActiveCoverage.code,
-            $planDesc : this["PlanCvgeDesc"] == ""
-        ) from $benefits
-
+        ${planDesc} ${memberNum}
         $benefit : DalMap(
-            $stc : this["SvcTypeCode"] == "4",
-            $bic : this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.CoPayment.code),
-            $inNetwork : this["InNetworkInd"] == "Y",
-            $msg : this["ALLMSG"] == "",
+            $stc : this["SvcTypeCode"] == "${stc?.value}",
+            $bic : this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.CoPayment.code),${inNetworkInd} ${allMsg}
             $copay : this["BnftAmt"] != null ||
             $coins : this["BnftPercent"] != null
         ) from $benefits
 
-
     then
-        $sri.setStc("4");
-        $sri.setMessage("ASDAS");
+        $sri.setStc("${stc?.value}");${setMsg}
         retract($sri);
 end`
   }
@@ -125,4 +121,50 @@ end`
     }
   }
 
+  private getInNetWork(ruleCondition: RuleCondition | undefined) {
+    if(ruleCondition==undefined){
+      return '';
+    }
+    return `
+            $inNetwork : this["InNetworkInd"] == "${ruleCondition.value}",`;
+  }
+  private getAllMsg(ruleCondition: RuleCondition | undefined) {
+    if(ruleCondition==undefined){
+      return '';
+    }
+    return `
+            $msg : this["ALLMSG"] == "${ruleCondition.value}",`;
+  }
+  private getSetMsg(ruleCondition: RuleCondition | undefined) {
+    if(ruleCondition==undefined){
+      return '';
+    }
+    return `
+        $sri.setMessage("${ruleCondition.value}");`;
+  }
+
+  private getPlanDesc(ruleCondition: RuleCondition | undefined) {
+    if(ruleCondition==undefined){
+      return '';
+    }
+    return `
+        DalMap(
+            this["SvcTypeCode"] == "30",
+            this["BnftInfoCode"] == BenefitTypeCode.ActiveCoverage.code,
+            $planDesc : this["PlanCvgeDesc"] == "${ruleCondition.value}"
+        ) from $benefits
+`;
+  }
+
+  private getMemberNum(ruleCondition: RuleCondition | undefined) {
+    if(ruleCondition==undefined){
+      return '';
+    }
+    const value = this.formatFieldValue(ruleCondition.value,ruleCondition.isNumber,ruleCondition.negate);
+    return `
+        DalMap(
+            $memNum : this["EPISODE_INSURANCE.MemberNum"] ${value}
+        ) from $episode
+`;
+  }
 }

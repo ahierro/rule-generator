@@ -1,9 +1,42 @@
 //12312
 rule "undefined"
     when
-        Applicant(experienceInYears > 10)
-        Applicant(currentSalary > 1000000 && currentSalary <=
-         2500000)
+        $sri : StcResolutionInput(
+            $episode : episode != null,
+            $custAbbr : episode ["CustomerAbbr"] == "ASD",
+            $payer : payerId == "ASD",
+            $recoPayerId : recoPayerId == "ASD",
+            $revCode : revCode == 121,
+            $providerType : providerType == "HOSPITAL",
+            $pType : patientType == "HOSPITAL",
+            $provider : providerId == "",
+            $mService : medicalService == "HOSPITAL",
+            $provider : providerCode == "",
+            $benefits : edDalMaps != null
+        )
+
+        DalMap(
+            $memNum : this["EPISODE_INSURANCE.MemberNum"] == ""
+        )
+
+        DalMap(
+            this["SvcTypeCode"] == "30",
+            this["BnftInfoCode"] == BenefitTypeCode.ActiveCoverage.code,
+            $planDesc : this["PlanCvgeDesc"] == ""
+        ) from $benefits
+
+        $benefit : DalMap(
+            $stc : this["SvcTypeCode"] == "4",
+            $bic : this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.Copayment.code),
+            $inNetwork : this["InNetworkInd"] == "Y",
+            $msg : this["ALLMSG"] == "",
+            $copay : this["BnftAmt"] != null || 
+            $coins : this["BnftPercent"] != null
+        ) from $benefits
+
+
     then
-        suggestedRole.setRole("Manager");
+        $sri.setStc("4");
+        $sri.setMessage("ASDAS");
+        retract($sri):
 end
