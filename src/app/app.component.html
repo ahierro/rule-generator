@@ -90,14 +90,20 @@
       </div>
       <div class="row">
         <mat-form-field appearance="fill" class="col">
-          <mat-label>medicalService</mat-label>
-          <input formControlName="medicalService" matInput autocomplete="off">
+          <mat-label>providerCode</mat-label>
+          <input formControlName="providerCode" matInput autocomplete="off">
         </mat-form-field>
       </div>
       <div class="row">
         <mat-form-field appearance="fill" class="col">
-          <mat-label>providerCode</mat-label>
-          <input formControlName="providerCode" matInput autocomplete="off">
+          <mat-label>procedureCode</mat-label>
+          <input formControlName="procedureCode" matInput autocomplete="off">
+        </mat-form-field>
+      </div>
+      <div class="row">
+        <mat-form-field appearance="fill" class="col">
+          <mat-label>medicalService</mat-label>
+          <input formControlName="medicalService" matInput autocomplete="off">
         </mat-form-field>
       </div>
       <div class="row">
@@ -106,7 +112,6 @@
           <input formControlName="memberNum" matInput autocomplete="off">
         </mat-form-field>
       </div>
-
       <div class="row">
         <mat-form-field appearance="fill" class="col">
           <mat-label>InNetworkInd</mat-label>
@@ -122,6 +127,12 @@
     </div>
     <div>
       <button (click)="generateRule()" mat-raised-button color="primary">Generar Regla</button>
+    </div>
+    <div>
+      <button (click)="clearForm()" mat-raised-button color="primary">Reset</button>
+    </div>
+    <div>
+      <button (click)="testData()" mat-raised-button color="primary">Datos de Prueba</button>
     </div>
   </div>
   <div>

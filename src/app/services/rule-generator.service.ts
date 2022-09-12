@@ -19,7 +19,8 @@ export class RuleGeneratorService {
     this.aliases.set("patientType", "$pType");
     this.aliases.set("providerId", "$provider");
     this.aliases.set("medicalService", "$mService");
-    this.aliases.set("providerCode", "$provider");
+    this.aliases.set("providerCode", "$providerCode");
+    this.aliases.set("procedureCode", "$procCode");
 
   }
 
@@ -43,7 +44,7 @@ export class RuleGeneratorService {
   getCommonCondition(fieldName: string, fieldValue: any, isNumber: boolean, negate: boolean) {
     const formattedVal = this.formatFieldValue(fieldValue, isNumber, negate);
     const alias = this.aliases.get(fieldName);
-    return ` ${alias} : ${fieldName} ${formattedVal}`
+    return ` ${alias} : ${this.getFieldName(fieldName)}${formattedVal}`
   }
 
   generateRule(rule: Rule): string {
@@ -62,14 +63,19 @@ export class RuleGeneratorService {
     const inNetworkInd = this.getInNetWork(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'inNetworkInd'));
     const planDesc = this.getPlanDesc(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'planDesc'));
     const memberNum = this.getMemberNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'memberNum'));
-
+    const procCode = this.getMemberNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'procedureCode'));
+    let delivery = '';
+    if(procCode){
+      delivery = `
+           $delivery : dalDelivery != null,`
+    }
     return `//${rule.ticketNumber}
 rule "${rule.name}"
     when
         $sri : StcResolutionInput(
            $benefits : ebDalMaps != null,
-           $episode : episode != null,
-           $custAbbr : episode ["CustomerAbbr"] ${this.formatFieldValue(rule.customerAbbr,false,false)},
+           $episode : episode != null,${delivery}
+           $custAbbr : episode ["CustomerAbbr"]${this.formatFieldValue(rule.customerAbbr,false,false)},
           ${stcResolutionInputStr}
         )
         ${planDesc} ${memberNum}
@@ -163,8 +169,16 @@ end`
     const value = this.formatFieldValue(ruleCondition.value,ruleCondition.isNumber,ruleCondition.negate);
     return `
         DalMap(
-            $memNum : this["EPISODE_INSURANCE.MemberNum"] ${value}
+            $memNum : this["EPISODE_INSURANCE.MemberNum"]${value}
         ) from $episode
 `;
+  }
+
+  private getFieldName(fieldName: string) {
+    if(fieldName == 'procedureCode'){
+      return `dalDelivery["ProcedureCode"]`;
+    }else{
+      return fieldName;
+    }
   }
 }

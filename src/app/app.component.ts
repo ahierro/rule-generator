@@ -19,28 +19,55 @@ export class AppComponent implements OnInit {
   constructor(private ruleGeneratorService: RuleGeneratorService,
               private fb: FormBuilder) {
     this.ruleForm = this.fb.group({
-      ticketNumber: new FormControl('1', [Validators.required]),
-      copay: new FormControl('1'),
-      coins: new FormControl('1'),
-      stc: new FormControl('1'),
-      ded: new FormControl('1'),
-      ruleName: new FormControl('1'),
-      custAbbr: new FormControl('1'),
-      payerId: new FormControl('1'),
-      recoPayerId: new FormControl('1'),
-      revCode: new FormControl('1'),
-      providerType: new FormControl('1'),
-      patientType: new FormControl('1'),
-      providerId: new FormControl('1'),
-      medicalService: new FormControl('1'),
-      providerCode: new FormControl('1'),
-      memberNum: new FormControl('1'),
-      planDesc: new FormControl('1'),
-      inNetworkInd: new FormControl('1'),
-      message: new FormControl('1')
+      ticketNumber: new FormControl('', [Validators.required]),
+      copay: new FormControl(''),
+      coins: new FormControl(''),
+      stc: new FormControl(''),
+      ded: new FormControl(''),
+      ruleName: new FormControl(''),
+      custAbbr: new FormControl(''),
+      payerId: new FormControl(''),
+      recoPayerId: new FormControl(''),
+      revCode: new FormControl(''),
+      providerType: new FormControl(''),
+      patientType: new FormControl(''),
+      providerId: new FormControl(''),
+      medicalService: new FormControl(''),
+      providerCode: new FormControl(''),
+      memberNum: new FormControl(''),
+      planDesc: new FormControl(''),
+      inNetworkInd: new FormControl(''),
+      message: new FormControl(''),
+      procedureCode: new FormControl('')
     });
   }
-
+  testData(){
+    this.ruleForm = this.fb.group({
+      ticketNumber: new FormControl('35098456', [Validators.required]),
+      copay: new FormControl('150.0'),
+      coins: new FormControl('0.1'),
+      stc: new FormControl('50'),
+      ded: new FormControl(''),
+      ruleName: new FormControl('Default to stc 50 for payerId LALALA'),
+      custAbbr: new FormControl('nkanse,nkansm'),
+      payerId: new FormControl('LALALA'),
+      recoPayerId: new FormControl('REC0013'),
+      revCode: new FormControl('401,383'),
+      providerType: new FormControl('34221'),
+      patientType: new FormControl('Outpatient'),
+      providerId: new FormControl('9976563'),
+      medicalService: new FormControl('Hospital'),
+      providerCode: new FormControl('23232'),
+      memberNum: new FormControl('63123'),
+      planDesc: new FormControl('HOLA MUNDO'),
+      inNetworkInd: new FormControl('Y'),
+      message: new FormControl('Mensaje de prueba'),
+      procedureCode: new FormControl('123')
+    });
+  }
+  clearForm(){
+    this.ruleForm.reset();
+  }
   ngOnInit(): void {
   }
 
@@ -78,14 +105,6 @@ export class AppComponent implements OnInit {
         value: this.ruleForm.value.providerType
       } as RuleCondition);
     }
-    if (!!this.ruleForm.value.patientType) {
-      ruleConditions.push({
-        fieldName: 'patientType',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.patientType
-      } as RuleCondition);
-    }
     if (!!this.ruleForm.value.providerId) {
       ruleConditions.push({
         fieldName: 'providerId',
@@ -94,20 +113,36 @@ export class AppComponent implements OnInit {
         value: this.ruleForm.value.providerId
       } as RuleCondition);
     }
-    if (!!this.ruleForm.value.medicalService) {
-      ruleConditions.push({
-        fieldName: 'medicalService',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.medicalService
-      } as RuleCondition);
-    }
     if (!!this.ruleForm.value.providerCode) {
       ruleConditions.push({
         fieldName: 'providerCode',
         isNumber: false,
         conditionType: "StcResolutionInput",
         value: this.ruleForm.value.providerCode
+      } as RuleCondition);
+    }
+    if (!!this.ruleForm.value.procedureCode) {
+      ruleConditions.push({
+        fieldName: 'procedureCode',
+        isNumber: false,
+        conditionType: "StcResolutionInput",
+        value: this.ruleForm.value.procedureCode
+      } as RuleCondition);
+    }
+    if (!!this.ruleForm.value.patientType) {
+      ruleConditions.push({
+        fieldName: 'patientType',
+        isNumber: false,
+        conditionType: "StcResolutionInput",
+        value: this.ruleForm.value.patientType
+      } as RuleCondition);
+    }
+    if (!!this.ruleForm.value.medicalService) {
+      ruleConditions.push({
+        fieldName: 'medicalService',
+        isNumber: false,
+        conditionType: "StcResolutionInput",
+        value: this.ruleForm.value.medicalService
       } as RuleCondition);
     }
 
