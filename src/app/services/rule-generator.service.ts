@@ -64,8 +64,12 @@ export class RuleGeneratorService {
     const planDesc = this.getPlanDesc(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'planDesc'));
     const memberNum = this.getMemberNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'memberNum'));
     const groupNum = this.getGroupNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'groupNum'));
-
     const procCode = this.getMemberNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'procedureCode'));
+    let custAbbr = '';
+    if(rule.customerAbbr){
+      custAbbr = this.getCustAbbr(rule.customerAbbr);
+    }
+
     let delivery = '';
     if(procCode){
       delivery = `
@@ -76,8 +80,7 @@ rule "${rule.name}"
     when
         $sri : StcResolutionInput(
            $benefits : ebDalMaps != null,
-           $episode : episode != null,${delivery}
-           $custAbbr : episode ["CustomerAbbr"]${this.formatFieldValue(rule.customerAbbr,false,false)},
+           $episode : episode != null,${delivery} ${custAbbr}
           ${stcResolutionInputStr}
         )
         ${planDesc} ${memberNum} ${groupNum}
@@ -194,5 +197,10 @@ end`
             $groupNum : this["EPISODE_INSURANCE.GroupNum"]${value}
         ) from $episode
 `;
+  }
+
+  private getCustAbbr(customerAbbr: string) {
+    return `
+           $custAbbr : episode ["CustomerAbbr"]${this.formatFieldValue(customerAbbr,false,false)},`;
   }
 }
