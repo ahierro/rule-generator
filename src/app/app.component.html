@@ -13,28 +13,24 @@
           </mat-form-field>
         </div>
         <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>Copay</mat-label>
             <input formControlName="copay" matInput autocomplete="off">
           </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>Coins</mat-label>
             <input formControlName="coins" matInput autocomplete="off">
           </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>STC</mat-label>
             <input formControlName="stc" matInput autocomplete="off">
           </mat-form-field>
         </div>
         <div class="row">
-          <mat-radio-group formControlName="ded">
-            <mat-radio-button value="true">Ded Applies</mat-radio-button>
-            <mat-radio-button value="false">Ded Not Applies</mat-radio-button>
-            <mat-radio-button value="">Ded Doesn't Matter</mat-radio-button>
+          <mat-radio-group formControlName="ded" class="row ded">
+            <mat-radio-button value="true" class="col">Ded Applies</mat-radio-button>
+            <mat-radio-button value="false" class="col">Ded Not Applies</mat-radio-button>
+            <mat-radio-button value="" class="col">Ded Doesn't Matter</mat-radio-button>
           </mat-radio-group>
         </div>
         <div class="row">
@@ -44,27 +40,27 @@
           </mat-form-field>
         </div>
         <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>custAbbr</mat-label>
             <input formControlName="custAbbr" matInput autocomplete="off">
           </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>payerId</mat-label>
             <input formControlName="payerId" matInput autocomplete="off">
           </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>recoPayerId</mat-label>
             <input formControlName="recoPayerId" matInput autocomplete="off">
           </mat-form-field>
         </div>
         <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-6">
             <mat-label>revCode</mat-label>
             <input formControlName="revCode" matInput autocomplete="off">
+          </mat-form-field>
+          <mat-form-field appearance="fill" class="col-6">
+            <mat-label>InNetworkInd</mat-label>
+            <input formControlName="inNetworkInd" matInput autocomplete="off">
           </mat-form-field>
         </div>
         <div class="row">
@@ -80,45 +76,31 @@
           </mat-form-field>
         </div>
         <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>providerType</mat-label>
             <input formControlName="providerType" matInput autocomplete="off">
           </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>providerId</mat-label>
             <input formControlName="providerId" matInput autocomplete="off">
           </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>providerCode</mat-label>
             <input formControlName="providerCode" matInput autocomplete="off">
           </mat-form-field>
         </div>
         <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>procedureCode</mat-label>
             <input formControlName="procedureCode" matInput autocomplete="off">
           </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>medicalService</mat-label>
             <input formControlName="medicalService" matInput autocomplete="off">
           </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="col">
+          <mat-form-field appearance="fill" class="col-4">
             <mat-label>memberNum</mat-label>
             <input formControlName="memberNum" matInput autocomplete="off">
-          </mat-form-field>
-        </div>
-        <div class="row">
-          <mat-form-field appearance="fill" class="col">
-            <mat-label>InNetworkInd</mat-label>
-            <input formControlName="inNetworkInd" matInput autocomplete="off">
           </mat-form-field>
         </div>
       </div>
