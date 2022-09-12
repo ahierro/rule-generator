@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
       stc: new FormControl(''),
       ded: new FormControl(''),
       ruleName: new FormControl(''),
-      custAbbr: new FormControl(''),
+      custAbbr: new FormControl('', [Validators.required]),
       payerId: new FormControl(''),
       recoPayerId: new FormControl(''),
       revCode: new FormControl(''),
@@ -49,7 +49,7 @@ export class AppComponent implements OnInit {
       stc: new FormControl('50'),
       ded: new FormControl(''),
       ruleName: new FormControl('Default to stc 50 for payerId LALALA'),
-      custAbbr: new FormControl('nkanse,nkansm'),
+      custAbbr: new FormControl('nkanse,nkansm', [Validators.required]),
       payerId: new FormControl('LALALA'),
       recoPayerId: new FormControl('REC0013'),
       revCode: new FormControl('401,383'),
@@ -72,6 +72,10 @@ export class AppComponent implements OnInit {
   }
 
   generateRule(): void {
+    if (this.ruleForm.invalid){
+      this.ruleForm.markAllAsTouched();
+      return;
+    }
     const ruleConditions: RuleCondition[] = [];
     if (!!this.ruleForm.value.payerId) {
       ruleConditions.push({
