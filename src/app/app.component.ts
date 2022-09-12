@@ -35,6 +35,7 @@ export class AppComponent implements OnInit {
       medicalService: new FormControl(''),
       providerCode: new FormControl(''),
       memberNum: new FormControl(''),
+      groupNum: new FormControl(''),
       planDesc: new FormControl(''),
       inNetworkInd: new FormControl(''),
       message: new FormControl(''),
@@ -59,6 +60,7 @@ export class AppComponent implements OnInit {
       medicalService: new FormControl('Hospital'),
       providerCode: new FormControl('23232'),
       memberNum: new FormControl('63123'),
+      groupNum: new FormControl('999887'),
       planDesc: new FormControl('HOLA MUNDO'),
       inNetworkInd: new FormControl('Y'),
       message: new FormControl('Mensaje de prueba'),
@@ -156,6 +158,14 @@ export class AppComponent implements OnInit {
         isNumber: false,
         conditionType: "memberNum",
         value: this.ruleForm.value.memberNum
+      } as RuleCondition);
+    }
+    if (!!this.ruleForm.value.groupNum) {
+      ruleConditions.push({
+        fieldName: 'groupNum',
+        isNumber: false,
+        conditionType: "groupNum",
+        value: this.ruleForm.value.groupNum
       } as RuleCondition);
     }
     if (!!this.ruleForm.value.planDesc) {

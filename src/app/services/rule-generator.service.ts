@@ -63,6 +63,8 @@ export class RuleGeneratorService {
     const inNetworkInd = this.getInNetWork(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'inNetworkInd'));
     const planDesc = this.getPlanDesc(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'planDesc'));
     const memberNum = this.getMemberNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'memberNum'));
+    const groupNum = this.getGroupNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'groupNum'));
+
     const procCode = this.getMemberNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'procedureCode'));
     let delivery = '';
     if(procCode){
@@ -78,7 +80,7 @@ rule "${rule.name}"
            $custAbbr : episode ["CustomerAbbr"]${this.formatFieldValue(rule.customerAbbr,false,false)},
           ${stcResolutionInputStr}
         )
-        ${planDesc} ${memberNum}
+        ${planDesc} ${memberNum} ${groupNum}
         $benefit : DalMap(
             $stc : this["SvcTypeCode"] == "${stc?.value}",
             $bic : this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.CoPayment.code),${inNetworkInd} ${allMsg}
@@ -180,5 +182,17 @@ end`
     }else{
       return fieldName;
     }
+  }
+
+  private getGroupNum(ruleCondition: RuleCondition | undefined) {
+    if(ruleCondition==undefined){
+      return '';
+    }
+    const value = this.formatFieldValue(ruleCondition.value,ruleCondition.isNumber,ruleCondition.negate);
+    return `
+        DalMap(
+            $groupNum : this["EPISODE_INSURANCE.GroupNum"]${value}
+        ) from $episode
+`;
   }
 }
