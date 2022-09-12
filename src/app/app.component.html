@@ -1,142 +1,145 @@
 <div>
-  <h1>Generador de reglas</h1>
-  <form [formGroup]="ruleForm" class="form">
-    <div class="container text-center">
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>Ticket Number</mat-label>
-          <input formControlName="ticketNumber" matInput required autocomplete="off">
-          <mat-error *ngIf="ruleForm.get('ticketNumber')?.errors?.['required']">El campo es requerido</mat-error>
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>Copay</mat-label>
-          <input formControlName="copay" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>Coins</mat-label>
-          <input formControlName="coins" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>STC</mat-label>
-          <input formControlName="stc" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-radio-group formControlName="ded">
-          <mat-radio-button value="true">Ded Applies </mat-radio-button>
-          <mat-radio-button value="false">Ded Not Applies </mat-radio-button>
-          <mat-radio-button value="">Ded Doesn't Matter </mat-radio-button>
-        </mat-radio-group>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>ruleName</mat-label>
-          <input formControlName="ruleName" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>custAbbr</mat-label>
-          <input formControlName="custAbbr" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>payerId</mat-label>
-          <input formControlName="payerId" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>recoPayerId</mat-label>
-          <input formControlName="recoPayerId" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>revCode</mat-label>
-          <input formControlName="revCode" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>planDesc</mat-label>
-          <input formControlName="planDesc" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>message</mat-label>
-          <input formControlName="message" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>providerType</mat-label>
-          <input formControlName="providerType" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>providerId</mat-label>
-          <input formControlName="providerId" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>providerCode</mat-label>
-          <input formControlName="providerCode" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>procedureCode</mat-label>
-          <input formControlName="procedureCode" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>medicalService</mat-label>
-          <input formControlName="medicalService" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>memberNum</mat-label>
-          <input formControlName="memberNum" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-      <div class="row">
-        <mat-form-field appearance="fill" class="col">
-          <mat-label>InNetworkInd</mat-label>
-          <input formControlName="inNetworkInd" matInput autocomplete="off">
-        </mat-form-field>
-      </div>
-    </div>
-  </form>
+  <div class="formContainter">
 
+    <form [formGroup]="ruleForm" class="form">
+
+      <div class="container text-center">
+        <h1>Generador de reglas</h1>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>Ticket Number</mat-label>
+            <input formControlName="ticketNumber" matInput required autocomplete="off">
+            <mat-error *ngIf="ruleForm.get('ticketNumber')?.errors?.['required']">El campo es requerido</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>Copay</mat-label>
+            <input formControlName="copay" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>Coins</mat-label>
+            <input formControlName="coins" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>STC</mat-label>
+            <input formControlName="stc" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-radio-group formControlName="ded">
+            <mat-radio-button value="true">Ded Applies</mat-radio-button>
+            <mat-radio-button value="false">Ded Not Applies</mat-radio-button>
+            <mat-radio-button value="">Ded Doesn't Matter</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>ruleName</mat-label>
+            <input formControlName="ruleName" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>custAbbr</mat-label>
+            <input formControlName="custAbbr" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>payerId</mat-label>
+            <input formControlName="payerId" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>recoPayerId</mat-label>
+            <input formControlName="recoPayerId" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>revCode</mat-label>
+            <input formControlName="revCode" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>planDesc</mat-label>
+            <input formControlName="planDesc" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>message</mat-label>
+            <input formControlName="message" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>providerType</mat-label>
+            <input formControlName="providerType" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>providerId</mat-label>
+            <input formControlName="providerId" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>providerCode</mat-label>
+            <input formControlName="providerCode" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>procedureCode</mat-label>
+            <input formControlName="procedureCode" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>medicalService</mat-label>
+            <input formControlName="medicalService" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>memberNum</mat-label>
+            <input formControlName="memberNum" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field appearance="fill" class="col">
+            <mat-label>InNetworkInd</mat-label>
+            <input formControlName="inNetworkInd" matInput autocomplete="off">
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </div>
   <div class="actions">
-    <div>
+    <div class="buttonContainer">
       <button (click)="generateTest()" mat-raised-button color="primary">Generar Test</button>
     </div>
-    <div>
+    <div class="buttonContainer">
       <button (click)="generateRule()" mat-raised-button color="primary">Generar Regla</button>
     </div>
-    <div>
+    <div class="buttonContainer">
       <button (click)="clearForm()" mat-raised-button color="primary">Reset</button>
     </div>
-    <div>
+    <div class="buttonContainer">
       <button (click)="testData()" mat-raised-button color="primary">Datos de Prueba</button>
     </div>
   </div>
-  <div>
-    <pre>{{test}}</pre>
+  <div class="codeGenerated">
     <pre>{{rule}}</pre>
+    <pre>{{test}}</pre>
   </div>
 </div>
