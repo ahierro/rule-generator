@@ -9,6 +9,7 @@ import {RuleCondition} from "../model/rule-condition";
 export class RuleGeneratorService {
 
   aliases = new Map();
+  fieldNames = new Map();
 
   constructor() {
 
@@ -21,6 +22,26 @@ export class RuleGeneratorService {
     this.aliases.set("medicalService", "$mService");
     this.aliases.set("providerCode", "$providerCode");
     this.aliases.set("procedureCode", "$procCode");
+    this.aliases.set("iiis", "$list");
+    this.aliases.set("bnftCvgeLevelCode", "$bnftCvgeLevelCode");
+    this.aliases.set("refId", "$refId");
+    this.aliases.set("message", "$msg");
+    this.aliases.set("inNetworkInd", "$inNetwork");
+    this.aliases.set("customerAbbr", "$custAbbr");
+    this.aliases.set("groupNum", "$groupNum");
+    this.aliases.set("memberNum", "$memNum");
+
+    this.fieldNames.set("procedureCode", `dalDelivery["ProcedureCode"]`);
+    this.fieldNames.set("iiis", `this["III02List"]`);
+    this.fieldNames.set("bnftCvgeLevelCode", `this[BenefitsConsts.BenefitResponseEligibility.BnftCvgeLevelCode]`);
+    this.fieldNames.set("refId", `this[BenefitsConsts.BenefitResponseEligibility.ReferenceIdentification.RefId]`);
+    this.fieldNames.set("message", `this["ALLMSG"]`);
+    this.fieldNames.set("inNetworkInd", `this["InNetworkInd"]`);
+    this.fieldNames.set("customerAbbr", `episode["CustomerAbbr"]`);
+
+    this.fieldNames.set("groupNum", `this["EPISODE_INSURANCE.GroupNum"]`);
+    this.fieldNames.set("memberNum", `this["EPISODE_INSURANCE.MemberNum"]`);
+
 
   }
 
@@ -46,29 +67,35 @@ export class RuleGeneratorService {
     const alias = this.aliases.get(fieldName);
     return ` ${alias} : ${this.getFieldName(fieldName)}${formattedVal}`
   }
-
-  generateRule(rule: Rule): string {
+  getFieldList( ruleConditions: RuleCondition[],conditionType:string){
     let stcResolutionInput:string[] = [];
-    if(rule.ruleConditions && rule.ruleConditions.length){
-      stcResolutionInput = rule.ruleConditions.filter(ruleCond => ruleCond.conditionType == "StcResolutionInput")
+    if(ruleConditions && ruleConditions.length){
+      stcResolutionInput = ruleConditions.filter(ruleCond => ruleCond.conditionType == conditionType)
         .map(ruleCond => this.getCommonCondition(ruleCond.fieldName,ruleCond.value,ruleCond.isNumber,ruleCond.negate))
 
     }
-    const stcResolutionInputStr = stcResolutionInput.join(`,
-          `);
+    const sep = `,
+          `;
+    const init = `
+          `;
+    return this.concatSepAtTheBeginning(stcResolutionInput.join(sep),init);
+  }
+  concatSepAtTheBeginning(str:string, sep:string){
+    return str?`${sep}${str}`:'';
+  }
+  concatSepAtTheEnd(str:string, sep:string){
+    return str?`${str}${sep}`:'';
+  }
+  generateRule(rule: Rule): string {
+    const stcResolutionInputStr = this.getFieldList(rule.ruleConditions,"StcResolutionInput");
+    const episode = this.concatSepAtTheEnd(this.concatSepAtTheBeginning(this.getFieldList(rule.ruleConditions,"episode"),'\n        DalMap('),'\n        ) from $episode\n');
+
+    const benefitStr = this.concatSepAtTheEnd(this.concatSepAtTheBeginning(this.getFieldList(rule.ruleConditions,"Benefit"),','),',')  || ',';
     const stc = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'stc');
     const message = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'message');
-    const allMsg = this.getAllMsg(message);
     const setMsg = this.getSetMsg(message);
-    const inNetworkInd = this.getInNetWork(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'inNetworkInd'));
     const planDesc = this.getPlanDesc(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'planDesc'));
-    const memberNum = this.getMemberNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'memberNum'));
-    const groupNum = this.getGroupNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'groupNum'));
-    const procCode = this.getMemberNum(rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'procedureCode'));
-    let custAbbr = '';
-    if(rule.customerAbbr){
-      custAbbr = this.getCustAbbr(rule.customerAbbr);
-    }
+    const procCode = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'procedureCode');
 
     let delivery = '';
     if(procCode){
@@ -80,15 +107,14 @@ rule "${rule.name}"
     when
         $sri : StcResolutionInput(
            $benefits : ebDalMaps != null,
-           $episode : episode != null,${delivery} ${custAbbr}
-          ${stcResolutionInputStr}
+           $episode : episode != null,${delivery} ${stcResolutionInputStr}
         )
-        ${planDesc} ${memberNum} ${groupNum}
+        ${planDesc} ${episode}
         $benefit : DalMap(
-            $stc : this["SvcTypeCode"] == "${stc?.value}",
-            $bic : this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.CoPayment.code),${inNetworkInd} ${allMsg}
-            $copay : this["BnftAmt"] != null ||
-            $coins : this["BnftPercent"] != null
+           $stc : this["SvcTypeCode"] == "${stc?.value}",
+           $bic : this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.CoPayment.code)${benefitStr}
+           $copay : this["BnftAmt"] != null ||
+           $coins : this["BnftPercent"] != null
         ) from $benefits
 
     then
@@ -132,20 +158,6 @@ end`
     }
   }
 
-  private getInNetWork(ruleCondition: RuleCondition | undefined) {
-    if(ruleCondition==undefined){
-      return '';
-    }
-    return `
-            $inNetwork : this["InNetworkInd"] == "${ruleCondition.value}",`;
-  }
-  private getAllMsg(ruleCondition: RuleCondition | undefined) {
-    if(ruleCondition==undefined){
-      return '';
-    }
-    return `
-            $msg : this["ALLMSG"] == "${ruleCondition.value}",`;
-  }
   private getSetMsg(ruleCondition: RuleCondition | undefined) {
     if(ruleCondition==undefined){
       return '';
@@ -167,40 +179,8 @@ end`
 `;
   }
 
-  private getMemberNum(ruleCondition: RuleCondition | undefined) {
-    if(ruleCondition==undefined){
-      return '';
-    }
-    const value = this.formatFieldValue(ruleCondition.value,ruleCondition.isNumber,ruleCondition.negate);
-    return `
-        DalMap(
-            $memNum : this["EPISODE_INSURANCE.MemberNum"]${value}
-        ) from $episode
-`;
-  }
-
   private getFieldName(fieldName: string) {
-    if(fieldName == 'procedureCode'){
-      return `dalDelivery["ProcedureCode"]`;
-    }else{
-      return fieldName;
-    }
+    return this.fieldNames.get(fieldName) || fieldName;
   }
 
-  private getGroupNum(ruleCondition: RuleCondition | undefined) {
-    if(ruleCondition==undefined){
-      return '';
-    }
-    const value = this.formatFieldValue(ruleCondition.value,ruleCondition.isNumber,ruleCondition.negate);
-    return `
-        DalMap(
-            $groupNum : this["EPISODE_INSURANCE.GroupNum"]${value}
-        ) from $episode
-`;
-  }
-
-  private getCustAbbr(customerAbbr: string) {
-    return `
-           $custAbbr : episode ["CustomerAbbr"]${this.formatFieldValue(customerAbbr,false,false)},`;
-  }
 }

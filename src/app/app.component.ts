@@ -39,7 +39,10 @@ export class AppComponent implements OnInit {
       planDesc: new FormControl(''),
       inNetworkInd: new FormControl(''),
       message: new FormControl(''),
-      procedureCode: new FormControl('')
+      procedureCode: new FormControl(''),
+      refId: new FormControl(''),
+      iiis: new FormControl(''),
+      bnftCvgeLevelCode: new FormControl('')
     });
   }
   testData(){
@@ -64,7 +67,11 @@ export class AppComponent implements OnInit {
       planDesc: new FormControl('HOLA MUNDO'),
       inNetworkInd: new FormControl('Y'),
       message: new FormControl('Mensaje de prueba'),
-      procedureCode: new FormControl('123')
+      procedureCode: new FormControl('123'),
+      refId: new FormControl('543'),
+      iiis: new FormControl('768'),
+      bnftCvgeLevelCode: new FormControl('10098')
+
     });
   }
   clearForm(){
@@ -79,6 +86,14 @@ export class AppComponent implements OnInit {
       return;
     }
     const ruleConditions: RuleCondition[] = [];
+    if (!!this.ruleForm.value.custAbbr) {
+      ruleConditions.push({
+        fieldName: 'customerAbbr',
+        isNumber: false,
+        conditionType: "StcResolutionInput",
+        value: this.ruleForm.value.custAbbr
+      } as RuleCondition);
+    }
     if (!!this.ruleForm.value.payerId) {
       ruleConditions.push({
         fieldName: 'payerId',
@@ -143,6 +158,30 @@ export class AppComponent implements OnInit {
         value: this.ruleForm.value.patientType
       } as RuleCondition);
     }
+    if (!!this.ruleForm.value.refId) {
+      ruleConditions.push({
+        fieldName: 'refId',
+        isNumber: false,
+        conditionType: "Benefit",
+        value: this.ruleForm.value.refId
+      } as RuleCondition);
+    }
+    if (!!this.ruleForm.value.iiis) {
+      ruleConditions.push({
+        fieldName: 'iiis',
+        isNumber: false,
+        conditionType: "Benefit",
+        value: this.ruleForm.value.iiis
+      } as RuleCondition);
+    }
+    if (!!this.ruleForm.value.bnftCvgeLevelCode) {
+      ruleConditions.push({
+        fieldName: 'bnftCvgeLevelCode',
+        isNumber: false,
+        conditionType: "Benefit",
+        value: this.ruleForm.value.bnftCvgeLevelCode
+      } as RuleCondition);
+    }
     if (!!this.ruleForm.value.medicalService) {
       ruleConditions.push({
         fieldName: 'medicalService',
@@ -156,7 +195,7 @@ export class AppComponent implements OnInit {
       ruleConditions.push({
         fieldName: 'memberNum',
         isNumber: false,
-        conditionType: "memberNum",
+        conditionType: "episode",
         value: this.ruleForm.value.memberNum
       } as RuleCondition);
     }
@@ -164,7 +203,7 @@ export class AppComponent implements OnInit {
       ruleConditions.push({
         fieldName: 'groupNum',
         isNumber: false,
-        conditionType: "groupNum",
+        conditionType: "episode",
         value: this.ruleForm.value.groupNum
       } as RuleCondition);
     }
@@ -180,7 +219,7 @@ export class AppComponent implements OnInit {
       ruleConditions.push({
         fieldName: 'inNetworkInd',
         isNumber: false,
-        conditionType: "inNetworkInd",
+        conditionType: "Benefit",
         value: this.ruleForm.value.inNetworkInd
       } as RuleCondition);
     }
@@ -188,7 +227,7 @@ export class AppComponent implements OnInit {
       ruleConditions.push({
         fieldName: 'message',
         isNumber: false,
-        conditionType: "message",
+        conditionType: "Benefit",
         value: this.ruleForm.value.message
       } as RuleCondition);
     }
@@ -203,7 +242,6 @@ export class AppComponent implements OnInit {
     const rule = {
       ticketNumber: this.ruleForm.value.ticketNumber,
       name: this.ruleForm.value.ruleName,
-      customerAbbr: this.ruleForm.value.custAbbr,
       ruleConditions: ruleConditions
     } as Rule;
     this.rule = this.ruleGeneratorService.generateRule(rule);
