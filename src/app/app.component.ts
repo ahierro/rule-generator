@@ -56,7 +56,7 @@ export class AppComponent implements OnInit {
       custAbbr: new FormControl('nkanse,nkansm'),
       payerId: new FormControl('LALALA'),
       recoPayerId: new FormControl('REC0013'),
-      revCode: new FormControl('401,383'),
+      revCode: new FormControl('111,1,2,33,3,22,66,6,7,777,8,88,9,9999'),
       providerType: new FormControl('34221'),
       patientType: new FormControl('Outpatient'),
       providerId: new FormControl('9976563'),

@@ -48,15 +48,29 @@ export class RuleGeneratorService {
   private formatFieldValue(fieldValue: string, isNumber: boolean, negate: boolean) {
     if (fieldValue.includes(",") && fieldValue.length > 3) {
       return (negate) ? " not in " : " in " + "(" + fieldValue.split(",")
-        .map(fieldVal => this.formatSingleValue(fieldVal, isNumber)
-        ).join(",") + ")";
+        .map(fieldVal => this.formatSingleValue(fieldVal, isNumber))
+        .sort((b,a) => {
+          if (typeof b == 'number' && typeof a == 'number' ) {
+            return b - a;
+          } else {
+            if (a > b) {
+              return -1;
+            }
+            if (b > a) {
+              return 1;
+            }
+            return 0;
+          }
+        })
+        .map(x => `${x}`)
+        .join(",") + ")";
     }
     return (negate) ? " != " : " == " + this.formatSingleValue(fieldValue, isNumber);
   }
 
   private formatSingleValue(fieldValue: string, isNumber: boolean) {
     if (isNumber) {
-      return fieldValue.trim();
+      return parseInt(fieldValue.trim());
     } else {
       return `"${fieldValue.trim()}"`
     }
@@ -130,10 +144,8 @@ end`
     return `public IRunnableTest test${expectedResults.ticketNumber}(){
   RunnableTest test = new RunnableJsonTest();
   test.setTestId("${expectedResults.ticketNumber}");
-
   test.assertAllCopay(${expectedResults.copay});
   test.assertAllCoinsurance(${expectedResults.coins});${ded} ${stc}
-
   return test;
 }`;
   }
