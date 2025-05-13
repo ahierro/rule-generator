@@ -9,7 +9,7 @@ import { RuleCondition } from "../model/rule-condition";
 export class RuleGeneratorService {
 
   fieldNames = new Map();
-
+  isRgex = new Map();
   constructor() {
 
     this.fieldNames.set("procedureCode", `dalDelivery["ProcedureCode"]`);
@@ -23,10 +23,14 @@ export class RuleGeneratorService {
     this.fieldNames.set("groupNum", `this["EPISODE_INSURANCE.GroupNum"]`);
     this.fieldNames.set("memberNum", `this["EPISODE_INSURANCE.MemberNum"]`);
 
-
+    this.isRgex.set("message", true);
+    this.isRgex.set("planDesc", true);
   }
 
-  private formatFieldValue(fieldValue: string, isNumber: boolean, negate: boolean) {
+  private formatFieldValue(fieldValue: string, isNumber: boolean, negate: boolean, isRegex: boolean = false) {
+    if(isRegex) {
+      return " matches " + `"(?i).*(${fieldValue.trim()}).*"`;
+    }
     if (fieldValue.includes(",") && fieldValue.length > 3) {
       return (negate) ? " not in " : " in " + "(" + fieldValue.split(",")
         .map(fieldVal => this.formatSingleValue(fieldVal, isNumber))
@@ -58,7 +62,7 @@ export class RuleGeneratorService {
   }
 
   getCommonCondition(fieldName: string, fieldValue: any, isNumber: boolean, negate: boolean) {
-    const formattedVal = this.formatFieldValue(fieldValue, isNumber, negate);
+    const formattedVal = this.formatFieldValue(fieldValue, isNumber, negate, this.isRgex.get(fieldName));
     return ` ${this.getFieldName(fieldName)}${formattedVal}`
   }
   getFieldList(ruleConditions: RuleCondition[], conditionType: string) {
@@ -176,11 +180,12 @@ end`
     if (ruleCondition == undefined) {
       return '';
     }
+    const planCvgeDesc = this.formatFieldValue(ruleCondition.value, false, ruleCondition.negate, this.isRgex.get(ruleCondition.fieldName));
     return `
         DalMap(
             this["SvcTypeCode"] == "30",
             this["BnftInfoCode"] == BenefitTypeCode.ActiveCoverage.code,
-            this["PlanCvgeDesc"] == "${ruleCondition.value}"
+            this["PlanCvgeDesc"]${planCvgeDesc}
         ) from $benefits
 `;
   }
