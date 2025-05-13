@@ -3,35 +3,34 @@ rule "undefined"
     when
         $sri : StcResolutionInput(
             $episode : episode != null,
-            $custAbbr : episode ["CustomerAbbr"] == "ASD",
-            $payer : payerId == "ASD",
-            $recoPayerId : recoPayerId == "ASD",
-            $revCode : revCode == 121,
-            $providerType : providerType == "HOSPITAL",
-            $pType : patientType == "HOSPITAL",
-            $provider : providerId == "",
-            $mService : medicalService == "HOSPITAL",
-            $provider : providerCode == "",
+            episode ["CustomerAbbr"] == "ASD",
+            payerId == "ASD",
+            recoPayerId == "ASD",
+            revCode == 121,
+            providerType == "HOSPITAL",
+            patientType == "HOSPITAL",
+            providerId == "",
+            medicalService == "HOSPITAL",
+            providerCode == "",
             $benefits : edDalMaps != null
         )
 
         DalMap(
-            $memNum : this["EPISODE_INSURANCE.MemberNum"] == ""
+            this["EPISODE_INSURANCE.MemberNum"] == ""
         )
 
         DalMap(
             this["SvcTypeCode"] == "30",
             this["BnftInfoCode"] == BenefitTypeCode.ActiveCoverage.code,
-            $planDesc : this["PlanCvgeDesc"] == ""
+            this["PlanCvgeDesc"] == ""
         ) from $benefits
 
         $benefit : DalMap(
-            $stc : this["SvcTypeCode"] == "4",
-            $bic : this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.Copayment.code),
-            $inNetwork : this["InNetworkInd"] == "Y",
-            $msg : this["ALLMSG"] == "",
-            $copay : this["BnftAmt"] != null || 
-            $coins : this["BnftPercent"] != null
+            this["SvcTypeCode"] == "4",
+            this["BnftInfoCode"] in (BenefitTypeCode.CoInsurance.code, BenefitTypeCode.Copayment.code),
+            this["InNetworkInd"] == "Y",
+            this["ALLMSG"] == "",
+            this["BnftAmt"] != null || this["BnftPercent"] != null
         ) from $benefits
 
 
