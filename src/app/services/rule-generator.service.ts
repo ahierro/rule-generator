@@ -23,13 +23,17 @@ export class RuleGeneratorService {
     this.fieldNames.set("groupNum", `this["EPISODE_INSURANCE.GroupNum"]`);
     this.fieldNames.set("memberNum", `this["EPISODE_INSURANCE.MemberNum"]`);
 
-    this.isRgex.set("message", true);
-    this.isRgex.set("planDesc", true);
+    this.isRgex.set("message", "CASE_INSENSITIVE");
+    this.isRgex.set("planDesc", "CASE_INSENSITIVE");
+    this.isRgex.set("memberNum", "MEMBER_NUM");
   }
 
-  private formatFieldValue(fieldValue: string, isNumber: boolean, negate: boolean, isRegex: boolean = false) {
-    if(isRegex) {
+  private formatFieldValue(fieldValue: string, isNumber: boolean, negate: boolean, isRegex: string) {
+    if(isRegex === 'CASE_INSENSITIVE') {
       return " matches " + `"(?i).*(${fieldValue.trim()}).*"`;
+    }
+    if(isRegex === 'MEMBER_NUM') {
+      return " matches " + `"^(${fieldValue.trim()}).*"`;
     }
     if (fieldValue.includes(",") && fieldValue.length > 3) {
       return (negate) ? " not in " : " in " + "(" + fieldValue.split(",")
