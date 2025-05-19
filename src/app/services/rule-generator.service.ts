@@ -56,7 +56,17 @@ export class RuleGeneratorService {
     }
     return (negate) ? " != " : " == " + this.formatSingleValue(fieldValue, isNumber);
   }
-
+  formatRange(fieldValue: string,fieldName: string) {
+    return fieldValue.trim()
+      .replace(/,/g, ' ')
+      .trim()
+      .split(/\s+/)
+      .map(range => {
+        const [start, end] = range.split('-').map(Number);
+        return `(${fieldName} >= ${start} && ${fieldName} <= ${end})`;
+      })
+      .join(' || ');
+  }
   private formatSingleValue(fieldValue: string, isNumber: boolean) {
     if (isNumber) {
       return parseInt(fieldValue.trim());
@@ -66,6 +76,9 @@ export class RuleGeneratorService {
   }
 
   getCommonCondition(fieldName: string, fieldValue: any, isNumber: boolean, negate: boolean) {
+    if(isNumber && fieldValue.includes("-")) {
+      return this.formatRange(fieldValue,fieldName);
+    }
     const formattedVal = this.formatFieldValue(fieldValue, isNumber, negate, this.isRgex.get(fieldName));
     return ` ${this.getFieldName(fieldName)}${formattedVal}`
   }
