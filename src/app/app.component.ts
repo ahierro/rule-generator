@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
   test = '';
   rule = '';
   ruleForm!: FormGroup;
-  conditionTypesByRuleType = new Map();
+  conditionTypesByRuleType = new Map<string,Map<string,string>>();
   fieldNames: string[] = [
     'customerAbbr',
     'payerId',
@@ -67,48 +67,8 @@ export class AppComponent implements OnInit {
       bnftCvgeLevelCode: new FormControl('')
     });
 
-    this.conditionTypesByRuleType.set("STC", new Map());
-    this.conditionTypesByRuleType.set("benefitfiltering", new Map());
+    this.conditionTypesByRuleType = this.ruleGeneratorService.getConditionTypes();
 
-    this.conditionTypesByRuleType.get("STC").set("customerAbbr", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("payerId", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("recoPayerId", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("revCode", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("providerType", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("providerId", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("providerCode", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("procedureCode", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("patientType", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("refId", "Benefit");
-    this.conditionTypesByRuleType.get("STC").set("iiis", "Benefit");
-    this.conditionTypesByRuleType.get("STC").set("bnftCvgeLevelCode", "Benefit");
-    this.conditionTypesByRuleType.get("STC").set("medicalService", "StcResolutionInput");
-    this.conditionTypesByRuleType.get("STC").set("memberNum", "episode");
-    this.conditionTypesByRuleType.get("STC").set("groupNum", "episode");
-    this.conditionTypesByRuleType.get("STC").set("planDesc", "planDesc");
-    this.conditionTypesByRuleType.get("STC").set("inNetworkInd", "Benefit");
-    this.conditionTypesByRuleType.get("STC").set("message", "Benefit");
-    this.conditionTypesByRuleType.get("STC").set("stc", "stc");
-
-    this.conditionTypesByRuleType.get("benefitfiltering").set("customerAbbr", "BenefitResolutionDTO");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("payerId", "InsuranceInfo");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("recoPayerId", "InsuranceInfo");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("revCode", "InsuranceInfo");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("providerType", "InsuranceInfo");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("providerId", "InsuranceInfo");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("providerCode", "InsuranceInfo");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("procedureCode", "InsuranceInfo");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("patientType", "InsuranceInfo");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("refId", "Benefit");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("iiis", "Benefit");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("bnftCvgeLevelCode", "Benefit");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("medicalService", "BenefitResolutionDTO");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("memberNum", "episode");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("groupNum", "episode");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("planDesc", "planDesc");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("inNetworkInd", "Benefit");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("message", "Benefit");
-    this.conditionTypesByRuleType.get("benefitfiltering").set("stc", "stc");
   }
   testData() {
     this.ruleForm = this.fb.group({
