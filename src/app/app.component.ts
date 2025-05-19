@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {RuleGeneratorService} from "./services/rule-generator.service";
-import {ExpectedResults} from "./model/expectedResults";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {Rule} from "./model/rule";
-import {RuleCondition} from "./model/rule-condition";
+import { Component, OnInit } from '@angular/core';
+import { RuleGeneratorService } from "./services/rule-generator.service";
+import { ExpectedResults } from "./model/expectedResults";
+import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import { Rule } from "./model/rule";
+import { RuleCondition } from "./model/rule-condition";
+import { TestingService } from './testing.service';
 
 @Component({
   selector: 'app-root',
@@ -15,9 +16,30 @@ export class AppComponent implements OnInit {
   test = '';
   rule = '';
   ruleForm!: FormGroup;
-
-  constructor(private ruleGeneratorService: RuleGeneratorService,
-              private fb: FormBuilder) {
+  conditionTypesByRuleType = new Map();
+  fieldNames: string[] = [
+    'customerAbbr',
+    'payerId',
+    'recoPayerId',
+    'revCode',
+    'providerType',
+    'providerId',
+    'providerCode',
+    'procedureCode',
+    'patientType',
+    'refId',
+    'iiis',
+    'bnftCvgeLevelCode',
+    'medicalService',
+    'memberNum',
+    'groupNum',
+    'planDesc',
+    'inNetworkInd',
+    'message',
+    'stc'
+  ];
+  constructor(private ruleGeneratorService: RuleGeneratorService,private testingService: TestingService,
+    private fb: FormBuilder) {
     this.ruleForm = this.fb.group({
       ticketNumber: new FormControl('', [Validators.required]),
       copay: new FormControl(''),
@@ -25,7 +47,7 @@ export class AppComponent implements OnInit {
       stc: new FormControl(''),
       ded: new FormControl(''),
       ruleName: new FormControl(''),
-      custAbbr: new FormControl(''),
+      customerAbbr: new FormControl(''),
       payerId: new FormControl(''),
       recoPayerId: new FormControl(''),
       revCode: new FormControl(''),
@@ -44,8 +66,51 @@ export class AppComponent implements OnInit {
       iiis: new FormControl(''),
       bnftCvgeLevelCode: new FormControl('')
     });
+
+    this.conditionTypesByRuleType.set("STC", new Map());
+    this.conditionTypesByRuleType.set("benefitfiltering", new Map());
+
+    this.conditionTypesByRuleType.get("STC").set("customerAbbr", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("payerId", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("recoPayerId", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("revCode", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("providerType", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("providerId", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("providerCode", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("procedureCode", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("patientType", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("refId", "Benefit");
+    this.conditionTypesByRuleType.get("STC").set("iiis", "Benefit");
+    this.conditionTypesByRuleType.get("STC").set("bnftCvgeLevelCode", "Benefit");
+    this.conditionTypesByRuleType.get("STC").set("medicalService", "StcResolutionInput");
+    this.conditionTypesByRuleType.get("STC").set("memberNum", "episode");
+    this.conditionTypesByRuleType.get("STC").set("groupNum", "episode");
+    this.conditionTypesByRuleType.get("STC").set("planDesc", "planDesc");
+    this.conditionTypesByRuleType.get("STC").set("inNetworkInd", "Benefit");
+    this.conditionTypesByRuleType.get("STC").set("message", "Benefit");
+    this.conditionTypesByRuleType.get("STC").set("stc", "stc");
+
+    this.conditionTypesByRuleType.get("benefitfiltering").set("customerAbbr", "BenefitResolutionDTO");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("payerId", "InsuranceInfo");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("recoPayerId", "InsuranceInfo");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("revCode", "InsuranceInfo");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("providerType", "InsuranceInfo");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("providerId", "InsuranceInfo");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("providerCode", "InsuranceInfo");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("procedureCode", "InsuranceInfo");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("patientType", "InsuranceInfo");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("refId", "Benefit");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("iiis", "Benefit");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("bnftCvgeLevelCode", "Benefit");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("medicalService", "BenefitResolutionDTO");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("memberNum", "episode");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("groupNum", "episode");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("planDesc", "planDesc");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("inNetworkInd", "Benefit");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("message", "Benefit");
+    this.conditionTypesByRuleType.get("benefitfiltering").set("stc", "stc");
   }
-  testData(){
+  testData() {
     this.ruleForm = this.fb.group({
       ticketNumber: new FormControl('35098456', [Validators.required]),
       copay: new FormControl('150.0'),
@@ -53,10 +118,10 @@ export class AppComponent implements OnInit {
       stc: new FormControl('50'),
       ded: new FormControl(''),
       ruleName: new FormControl('Default to stc 50 for payerId LALALA'),
-      custAbbr: new FormControl('nkanse,nkansm'),
+      customerAbbr: new FormControl('nkanse,nkansm'),
       payerId: new FormControl('LALALA'),
       recoPayerId: new FormControl('REC0013'),
-      revCode: new FormControl('111,1,2,33,3,22,66,6,7,777,8,88,9,9999'),
+      revCode: new FormControl('320-329,404,500-599,921'),
       providerType: new FormControl('34221'),
       patientType: new FormControl('Outpatient'),
       providerId: new FormControl('9976563'),
@@ -74,177 +139,37 @@ export class AppComponent implements OnInit {
 
     });
   }
-  clearForm(){
+  clearForm() {
     this.ruleForm.reset();
   }
   ngOnInit(): void {
   }
 
-  generateRule(): void {
-    if (this.ruleForm.invalid){
+  generateRule(scope: string): void {
+    if (this.ruleForm.invalid) {
       this.ruleForm.markAllAsTouched();
       return;
     }
     const ruleConditions: RuleCondition[] = [];
-    if (!!this.ruleForm.value.custAbbr) {
-      ruleConditions.push({
-        fieldName: 'customerAbbr',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.custAbbr
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.payerId) {
-      ruleConditions.push({
-        fieldName: 'payerId',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.payerId
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.recoPayerId) {
-      ruleConditions.push({
-        fieldName: 'recoPayerId',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.recoPayerId
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.revCode) {
-      ruleConditions.push({
-        fieldName: 'revCode',
-        isNumber: true,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.revCode
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.providerType) {
-      ruleConditions.push({
-        fieldName: 'providerType',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.providerType
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.providerId) {
-      ruleConditions.push({
-        fieldName: 'providerId',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.providerId
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.providerCode) {
-      ruleConditions.push({
-        fieldName: 'providerCode',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.providerCode
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.procedureCode) {
-      ruleConditions.push({
-        fieldName: 'procedureCode',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.procedureCode
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.patientType) {
-      ruleConditions.push({
-        fieldName: 'patientType',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.patientType
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.refId) {
-      ruleConditions.push({
-        fieldName: 'refId',
-        isNumber: false,
-        conditionType: "Benefit",
-        value: this.ruleForm.value.refId
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.iiis) {
-      ruleConditions.push({
-        fieldName: 'iiis',
-        isNumber: false,
-        conditionType: "Benefit",
-        value: this.ruleForm.value.iiis
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.bnftCvgeLevelCode) {
-      ruleConditions.push({
-        fieldName: 'bnftCvgeLevelCode',
-        isNumber: false,
-        conditionType: "Benefit",
-        value: this.ruleForm.value.bnftCvgeLevelCode
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.medicalService) {
-      ruleConditions.push({
-        fieldName: 'medicalService',
-        isNumber: false,
-        conditionType: "StcResolutionInput",
-        value: this.ruleForm.value.medicalService
-      } as RuleCondition);
-    }
 
-    if (!!this.ruleForm.value.memberNum) {
-      ruleConditions.push({
-        fieldName: 'memberNum',
-        isNumber: false,
-        conditionType: "episode",
-        value: this.ruleForm.value.memberNum
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.groupNum) {
-      ruleConditions.push({
-        fieldName: 'groupNum',
-        isNumber: false,
-        conditionType: "episode",
-        value: this.ruleForm.value.groupNum
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.planDesc) {
-      ruleConditions.push({
-        fieldName: 'planDesc',
-        isNumber: false,
-        conditionType: "planDesc",
-        value: this.ruleForm.value.planDesc
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.inNetworkInd) {
-      ruleConditions.push({
-        fieldName: 'inNetworkInd',
-        isNumber: false,
-        conditionType: "Benefit",
-        value: this.ruleForm.value.inNetworkInd
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.message) {
-      ruleConditions.push({
-        fieldName: 'message',
-        isNumber: false,
-        conditionType: "Benefit",
-        value: this.ruleForm.value.message
-      } as RuleCondition);
-    }
-    if (!!this.ruleForm.value.stc) {
-      ruleConditions.push({
-        fieldName: 'stc',
-        isNumber: false,
-        conditionType: "stc",
-        value: this.ruleForm.value.stc
-      } as RuleCondition);
-    }
+
+    this.fieldNames.forEach(fieldName => {
+      if (!!this.ruleForm.value[fieldName]) {
+        ruleConditions.push({
+          fieldName: fieldName,
+          isNumber: fieldName.match(/(revCode)/) != null,
+          conditionType: this.conditionTypesByRuleType.get(scope)?.get(fieldName),
+          value: this.ruleForm.value[fieldName]
+        } as RuleCondition);
+      }
+    });
+
     const rule = {
       ticketNumber: this.ruleForm.value.ticketNumber,
       name: this.ruleForm.value.ruleName,
       ruleConditions: ruleConditions
     } as Rule;
-    this.rule = this.ruleGeneratorService.generateRule(rule);
+    this.rule = this.ruleGeneratorService.generateRule(rule,scope);
   }
 
   generateTest(): void {
@@ -263,7 +188,7 @@ export class AppComponent implements OnInit {
         stc: this.ruleForm.value.stc,
         ded
       } as ExpectedResults;
-      this.test = this.ruleGeneratorService.generateTest(expectedResults);
+      this.test = this.testingService.generateTest(expectedResults);
     } else {
       this.ruleForm.markAllAsTouched();
     }

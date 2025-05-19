@@ -42,7 +42,7 @@
         <div class="row">
           <mat-form-field appearance="fill" class="col-4">
             <mat-label>Cust Abbr</mat-label>
-            <input formControlName="custAbbr" matInput autocomplete="off">
+            <input formControlName="customerAbbr" matInput autocomplete="off">
           </mat-form-field>
           <mat-form-field appearance="fill" class="col-4">
             <mat-label>Payer Code / Payer ID</mat-label>
@@ -131,7 +131,10 @@
       <button (click)="generateTest()" mat-raised-button color="primary">Generar Test</button>
     </div>
     <div class="buttonContainer">
-      <button (click)="generateRule()" mat-raised-button color="primary">Generar Regla</button>
+      <button (click)="generateRule('STC')" mat-raised-button color="primary">STC Res</button>
+    </div>
+        <div class="buttonContainer">
+      <button (click)="generateRule('benefitfiltering')" mat-raised-button color="primary">Benefit Filtering</button>
     </div>
     <div class="buttonContainer">
       <button (click)="clearForm()" mat-raised-button color="primary">Reset</button>
