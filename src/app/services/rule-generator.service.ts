@@ -29,10 +29,10 @@ export class RuleGeneratorService {
   }
 
   private formatFieldValue(fieldValue: string, isNumber: boolean, negate: boolean, isRegex: string) {
-    if(isRegex === 'CASE_INSENSITIVE') {
+    if (isRegex === 'CASE_INSENSITIVE') {
       return " matches " + `"(?i).*(${fieldValue.trim()}).*"`;
     }
-    if(isRegex === 'MEMBER_NUM') {
+    if (isRegex === 'MEMBER_NUM') {
       return " matches " + `"^(${fieldValue.trim()}).*"`;
     }
     if (fieldValue.includes(",") && fieldValue.length > 3) {
@@ -56,16 +56,32 @@ export class RuleGeneratorService {
     }
     return (negate) ? " != " : " == " + this.formatSingleValue(fieldValue, isNumber);
   }
-  formatRange(fieldValue: string,fieldName: string) {
-    return fieldValue.trim()
-      .replace(/,/g, ' ')
-      .trim()
-      .split(/\s+/)
-      .map(range => {
-        const [start, end] = range.split('-').map(Number);
-        return `(${fieldName} >= ${start} && ${fieldName} <= ${end})`;
-      })
-      .join(' || ');
+  formatRange(fieldValue: string, fieldName: string) {
+    const normalized = fieldValue.replace(/,/g, ' ').trim();
+    const tokens = normalized.split(/\s+/);
+
+    const expressions: string[] = [];
+    const singleValues: number[] = [];
+
+    for (const token of tokens) {
+      if (token.includes('-')) {
+        const [start, end] = token.split('-').map(Number);
+        if (!isNaN(start) && !isNaN(end)) {
+          expressions.push(`(${fieldName} >= ${start} && ${fieldName} <= ${end})`);
+        }
+      } else {
+        const value = Number(token);
+        if (!isNaN(value)) {
+          singleValues.push(value);
+        }
+      }
+    }
+
+    if (singleValues.length > 0) {
+      expressions.push(`(${fieldName} in (${singleValues.join(', ')}))`);
+    }
+
+    return expressions.join(' || ');
   }
   private formatSingleValue(fieldValue: string, isNumber: boolean) {
     if (isNumber) {
@@ -76,8 +92,8 @@ export class RuleGeneratorService {
   }
 
   getCommonCondition(fieldName: string, fieldValue: any, isNumber: boolean, negate: boolean) {
-    if(isNumber && fieldValue.includes("-")) {
-      return this.formatRange(fieldValue,fieldName);
+    if (isNumber && fieldValue.includes("-")) {
+      return this.formatRange(fieldValue, fieldName);
     }
     const formattedVal = this.formatFieldValue(fieldValue, isNumber, negate, this.isRgex.get(fieldName));
     return ` ${this.getFieldName(fieldName)}${formattedVal}`
@@ -152,7 +168,7 @@ end`
     if (!!coins) {
       return `
   test.assertAllCoinsurance(${coins});`;
-    } else{
+    } else {
       return '';
     }
   }
@@ -160,7 +176,7 @@ end`
     if (!!copay) {
       return `
   test.assertAllCopay(${copay});`;
-    } else{
+    } else {
       return '';
     }
   }
