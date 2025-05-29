@@ -68,7 +68,6 @@ export class AppComponent implements OnInit {
     });
 
     this.conditionTypesByRuleType = this.ruleGeneratorService.getConditionTypes();
-
   }
   testData() {
     this.ruleForm = this.fb.group({
@@ -117,7 +116,7 @@ export class AppComponent implements OnInit {
       if (!!this.ruleForm.value[fieldName]) {
         ruleConditions.push({
           fieldName: fieldName,
-          isNumber: fieldName.match(/(revCode)/) != null,
+          isNumber: this.ruleGeneratorService.getNumberFieldsByScope(scope).includes(fieldName),
           conditionType: this.conditionTypesByRuleType.get(scope)?.get(fieldName),
           value: this.ruleForm.value[fieldName]
         } as RuleCondition);

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Rule } from "../model/rule";
 import { RuleCondition } from "../model/rule-condition";
 import { StcResService } from '../stc-res.service';
+import { BenfilService } from '../benfil.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,10 +10,20 @@ import { StcResService } from '../stc-res.service';
 export class RuleGeneratorService {
 
   isRgex = new Map();
-  constructor(private stcResService: StcResService) {
+  constructor(private stcResService: StcResService,private benfilService: BenfilService) {
     this.isRgex.set("message", "CASE_INSENSITIVE");
     this.isRgex.set("planDesc", "CASE_INSENSITIVE");
     this.isRgex.set("memberNum", "MEMBER_NUM");
+  }
+  getNumberFieldsByScope(scope: string): string[] {
+    switch (scope) {
+      case 'STC':
+        return this.stcResService.getNumberFields();
+      case 'benefitfiltering':
+        return this.benfilService.getNumberFields();
+      default:
+        return [];
+    }
   }
 
   formatFieldValue(fieldValue: string, isNumber: boolean, negate: boolean, isRegex: string) {
@@ -97,6 +108,9 @@ export class RuleGeneratorService {
           `;
     return this.concatSepAtTheBeginning(fieldName.join(sep), init);
   }
+  wrap(str: string, wrapperBegginig: string, wrapperEnd: string) {
+    return str ? `${wrapperBegginig}${str}${wrapperEnd}` : '';
+  }
   concatSepAtTheBeginning(str: string, sep: string) {
     return str ? `${sep}${str}` : '';
   }
@@ -108,6 +122,8 @@ export class RuleGeneratorService {
     switch (scope) {
       case 'STC':
         return this.stcResService.generateRule(rule, this);
+      case 'benefitfiltering':
+        return this.benfilService.generateRule(rule, this);
       default:
         return '';
     }
@@ -116,29 +132,11 @@ export class RuleGeneratorService {
     const conditionTypesByRuleType = new Map<string, any>();
 
     this.stcResService.addConditionTypes(conditionTypesByRuleType);
-    conditionTypesByRuleType.set("benefitfiltering", new Map<string,string>());
-    conditionTypesByRuleType.get("benefitfiltering").set("customerAbbr", "BenefitResolutionDTO");
-    conditionTypesByRuleType.get("benefitfiltering").set("payerId", "InsuranceInfo");
-    conditionTypesByRuleType.get("benefitfiltering").set("recoPayerId", "InsuranceInfo");
-    conditionTypesByRuleType.get("benefitfiltering").set("revCode", "InsuranceInfo");
-    conditionTypesByRuleType.get("benefitfiltering").set("providerType", "InsuranceInfo");
-    conditionTypesByRuleType.get("benefitfiltering").set("providerId", "InsuranceInfo");
-    conditionTypesByRuleType.get("benefitfiltering").set("providerCode", "InsuranceInfo");
-    conditionTypesByRuleType.get("benefitfiltering").set("procedureCode", "InsuranceInfo");
-    conditionTypesByRuleType.get("benefitfiltering").set("patientType", "InsuranceInfo");
-    conditionTypesByRuleType.get("benefitfiltering").set("refId", "Benefit");
-    conditionTypesByRuleType.get("benefitfiltering").set("iiis", "Benefit");
-    conditionTypesByRuleType.get("benefitfiltering").set("bnftCvgeLevelCode", "Benefit");
-    conditionTypesByRuleType.get("benefitfiltering").set("medicalService", "BenefitResolutionDTO");
-    conditionTypesByRuleType.get("benefitfiltering").set("memberNum", "episode");
-    conditionTypesByRuleType.get("benefitfiltering").set("groupNum", "episode");
-    conditionTypesByRuleType.get("benefitfiltering").set("planDesc", "planDesc");
-    conditionTypesByRuleType.get("benefitfiltering").set("inNetworkInd", "Benefit");
-    conditionTypesByRuleType.get("benefitfiltering").set("message", "Benefit");
-    conditionTypesByRuleType.get("benefitfiltering").set("stc", "stc");
+    this.benfilService.addConditionTypes(conditionTypesByRuleType);
 
     return conditionTypesByRuleType as Map<string, Map<string, string>>;
   }
+
   private getFieldName(fieldName: string,fieldNames: Map<string, string>) {
     return fieldNames.get(fieldName) || fieldName;
   }

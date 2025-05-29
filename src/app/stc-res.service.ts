@@ -24,9 +24,9 @@ export class StcResService {
 
   generateRule(rule: Rule, ruleGeneratorService: RuleGeneratorService): string {
     const stcResolutionInputStr = ruleGeneratorService.getFieldList(rule.ruleConditions, "StcResolutionInput", this.fieldNames);
-    const episode = ruleGeneratorService.concatSepAtTheEnd(ruleGeneratorService.concatSepAtTheBeginning(ruleGeneratorService.getFieldList(rule.ruleConditions, "episode",this.fieldNames), '\n        DalMap('), '\n        ) from $episode\n');
+    const episode = ruleGeneratorService.concatSepAtTheEnd(ruleGeneratorService.concatSepAtTheBeginning(ruleGeneratorService.getFieldList(rule.ruleConditions, "episode", this.fieldNames), '\n        DalMap('), '\n        ) from $episode\n');
 
-    const benefitStr = ruleGeneratorService.concatSepAtTheEnd(ruleGeneratorService.concatSepAtTheBeginning(ruleGeneratorService.getFieldList(rule.ruleConditions, "Benefit",this.fieldNames), ','), ',') || ',';
+    const benefitStr = ruleGeneratorService.concatSepAtTheEnd(ruleGeneratorService.concatSepAtTheBeginning(ruleGeneratorService.getFieldList(rule.ruleConditions, "Benefit", this.fieldNames), ','), ',') || ',';
     const stc = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'stc');
     const message = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'message');
     const setMsg = this.getSetMsg(message);
@@ -78,7 +78,7 @@ end`
         $sri.setMessage("${ruleCondition.value}");`;
   }
   addConditionTypes(conditionTypesByRuleType: Map<string, any>) {
-    conditionTypesByRuleType.set("STC", new Map<string,string>());
+    conditionTypesByRuleType.set("STC", new Map<string, string>());
     conditionTypesByRuleType.get("STC").set("customerAbbr", "StcResolutionInput");
     conditionTypesByRuleType.get("STC").set("payerId", "StcResolutionInput");
     conditionTypesByRuleType.get("STC").set("recoPayerId", "StcResolutionInput");
@@ -98,5 +98,8 @@ end`
     conditionTypesByRuleType.get("STC").set("inNetworkInd", "Benefit");
     conditionTypesByRuleType.get("STC").set("message", "Benefit");
     conditionTypesByRuleType.get("STC").set("stc", "stc");
+  }
+  getNumberFields(): string[] {
+    return ["revCode"];
   }
 }

@@ -1,0 +1,46 @@
+rule "XXXX" extends "BenefitFiltering DTO BASE"
+    when
+       BenefitsResolutionDTO(
+            customerAbbr == ""
+            encounterInfo.patientType == "",
+            encounterInfo.medicalService == ""
+            encounterInfo.providerGroupCode in (ProviderGroupCode.SistersOfMercyBenefitCollector)
+       ) from $dto
+
+       InsuranceInfo(
+           memberNumber matches "^().*",
+           groupNumber matches "^().*",
+           payerCode matches "^().*",
+           isInNetwork == false,
+           planDesc not matches "(?i).*.*",
+           $procedures: procedureInfoList != null
+       ) from $insurances
+
+       RecoPayerIdOverride(input == $dto, recoPayerCode in (""))
+
+        proc: ProcedureInfo(
+            procedureCode matches "^0*()$",
+            revenueCode matches "^0*()$"
+        )from $procedures
+
+       $badBen : Benefit(
+           benefitType != null,
+           serviceTypeCode == ServiceTypeCode.DiagnosticXRay,
+           $badIndustryCode : additionalInfos != null,
+           $badMsg : msgs != null
+       )from $benefits
+
+       String(this matches "(?i).*?.*") from $badMsg
+
+        AdditionalInfo(
+            industryCode != null,
+            industryCode.code == "11"
+        )from $badIndustryCode
+
+    then
+       outputCollector.addRuleOutput(FilterBenefitOutput.newFilter()
+           .filterBenefit($badBen)
+           .onDto($dto)
+           .fromRule(drools.getRule().getName())
+   );
+end
