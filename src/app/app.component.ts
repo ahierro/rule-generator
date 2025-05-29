@@ -12,7 +12,6 @@ import { TestingService } from './testing.service';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-
   test = '';
   rule = '';
   ruleForm!: FormGroup;
@@ -38,6 +37,7 @@ export class AppComponent implements OnInit {
     'message',
     'stc'
   ];
+  selectedRuleType: string = 'STC';
   constructor(private ruleGeneratorService: RuleGeneratorService,private testingService: TestingService,
     private fb: FormBuilder) {
     this.ruleForm = this.fb.group({

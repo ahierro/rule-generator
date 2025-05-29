@@ -131,10 +131,16 @@
       <button (click)="generateTest()" mat-raised-button color="primary">Generar Test</button>
     </div>
     <div class="buttonContainer">
-      <button (click)="generateRule('STC')" mat-raised-button color="primary">STC Res</button>
+      <mat-form-field appearance="fill">
+        <mat-label>Tipo de Regla</mat-label>
+        <mat-select [(value)]="selectedRuleType">
+          <mat-option value="STC">STC</mat-option>
+          <mat-option value="benefitfiltering">Benefit Filtering</mat-option>
+        </mat-select>
+      </mat-form-field>
     </div>
-        <div class="buttonContainer">
-      <button (click)="generateRule('benefitfiltering')" mat-raised-button color="primary">Benefit Filtering</button>
+    <div class="buttonContainer">
+      <button (click)="generateRule(selectedRuleType)" mat-raised-button color="primary">Generar Regla</button>
     </div>
     <div class="buttonContainer">
       <button (click)="clearForm()" mat-raised-button color="primary">Reset</button>

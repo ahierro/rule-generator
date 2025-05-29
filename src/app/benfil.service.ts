@@ -33,9 +33,15 @@ export class BenfilService {
     const recoPayerCodeInfo = ruleGeneratorService.wrap(ruleGeneratorService.getFieldList(rule.ruleConditions, "RecoPayerIdOverride", this.fieldNames), `
     RecoPayerIdOverride(input == $dto,`, `)
         `);
-    const procedureInfo = ruleGeneratorService.wrap(ruleGeneratorService.getFieldList(rule.ruleConditions, "ProcedureInfo", this.fieldNames), `
+    let procedureInfo = ruleGeneratorService.wrap(ruleGeneratorService.getFieldList(rule.ruleConditions, "ProcedureInfo", this.fieldNames), `
     ProcedureInfo(`, `) from $procedures
         `);
+
+    if(!insuranceInfo && procedureInfo){
+      procedureInfo = ruleGeneratorService.concatSepAtTheBeginning(procedureInfo,` 
+    InsuranceInfo($procedures: procedureInfoList != null) from $insurances
+        `);
+    }
 
     const message = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'message');
     const stc = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'stc');
@@ -44,7 +50,7 @@ export class BenfilService {
 rule "${rule.name}" extends "BenefitFiltering DTO BASE"
     when
        ${benefitsResolutionDTO} ${insuranceInfo} ${recoPayerCodeInfo} ${procedureInfo}
-       $badBen : Benefit(
+    $badBen : Benefit(
            benefitType != null,
            serviceTypeCode == ServiceTypeCode.${stc?.value},
            $badIndustryCode : additionalInfos != null,
