@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Rule } from './model/rule';
 import { RuleGeneratorService } from './services/rule-generator.service';
-import { RuleCondition } from './model/rule-condition';
 
 @Injectable({
   providedIn: 'root'
@@ -45,20 +44,26 @@ export class BenfilService {
 
     const message = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'message');
     const stc = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'stc');
-
+    const iiis = rule.ruleConditions.find(ruleCond => ruleCond.fieldName == 'iiis');
+    console.log('iiis', iiis);
     return `//${rule.ticketNumber}
 rule "${rule.name}" extends "BenefitFiltering DTO BASE"
     when
        ${benefitsResolutionDTO} ${insuranceInfo} ${recoPayerCodeInfo} ${procedureInfo}
     $badBen : Benefit(
            benefitType != null,
-           serviceTypeCode == ServiceTypeCode.${stc?.value},
-           $badIndustryCode : additionalInfos != null,
+           serviceTypeCode == ServiceTypeCode.${stc?.value},${iiis?.value ? `
+           $badIndustryCode : additionalInfos != null,`: ''}
            $badMsg : msgs != null
        )from $benefits
 
        String(this matches "(?i).*(${message?.value}).*") from $badMsg
-
+        ${iiis?.value ? `
+        AdditionalInfo(
+            industryCode != null,
+            industryCode.code == "${iiis?.value}",
+        )from $badIndustryCode
+          ` : ''}
     then
        outputCollector.addRuleOutput(FilterBenefitOutput.newFilter()
            .filterBenefit($badBen)
