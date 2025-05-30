@@ -35,7 +35,10 @@ export class AppComponent implements OnInit {
     'planDesc',
     'inNetworkInd',
     'message',
-    'stc'
+    'stc',
+    'copay',
+    'coins',
+    'ded'
   ];
   selectedRuleType: string = 'STC';
   constructor(private ruleGeneratorService: RuleGeneratorService,private testingService: TestingService,

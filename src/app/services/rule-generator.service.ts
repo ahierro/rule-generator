@@ -3,14 +3,24 @@ import { Rule } from "../model/rule";
 import { RuleCondition } from "../model/rule-condition";
 import { StcResService } from '../stc-res.service';
 import { BenfilService } from '../benfil.service';
+import { DedAppliesService } from '../ded-applies.service';
+import { CustomOverrideService } from '../custom-override.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RuleGeneratorService {
-
+  sep = `,
+          `;
+  init = `
+          `;
   isRgex = new Map();
-  constructor(private stcResService: StcResService,private benfilService: BenfilService) {
+  constructor(
+    private stcResService: StcResService,
+    private benfilService: BenfilService,
+    private dedAppliesService: DedAppliesService,
+    private customOverrideService: CustomOverrideService
+  ) {
     this.isRgex.set("message", "CASE_INSENSITIVE");
     this.isRgex.set("planDesc", "CASE_INSENSITIVE");
     this.isRgex.set("memberNum", "MEMBER_NUM");
@@ -21,6 +31,10 @@ export class RuleGeneratorService {
         return this.stcResService.getNumberFields();
       case 'benefitfiltering':
         return this.benfilService.getNumberFields();
+      case 'dedApplies':
+        return this.dedAppliesService.getNumberFields();
+      case 'customOverride':
+        return this.customOverrideService.getNumberFields();
       default:
         return [];
     }
@@ -102,11 +116,8 @@ export class RuleGeneratorService {
       fieldName = ruleConditions.filter(ruleCond => ruleCond.conditionType == conditionType)
         .map(ruleCond => this.getCommonCondition(ruleCond.fieldName, ruleCond.value, ruleCond.isNumber, ruleCond.negate,fieldNames))
     }
-    const sep = `,
-          `;
-    const init = `
-          `;
-    return this.concatSepAtTheBeginning(fieldName.join(sep), init);
+
+    return this.concatSepAtTheBeginning(fieldName.join(this.sep), this.init);
   }
   wrap(str: string, wrapperBegginig: string, wrapperEnd: string) {
     return str ? `${wrapperBegginig}${str}${wrapperEnd}` : '';
@@ -124,6 +135,10 @@ export class RuleGeneratorService {
         return this.stcResService.generateRule(rule, this);
       case 'benefitfiltering':
         return this.benfilService.generateRule(rule, this);
+      case 'dedApplies':
+        return this.dedAppliesService.generateRule(rule, this);
+      case 'customOverride':
+        return this.customOverrideService.generateRule(rule, this);
       default:
         return '';
     }
@@ -133,6 +148,8 @@ export class RuleGeneratorService {
 
     this.stcResService.addConditionTypes(conditionTypesByRuleType);
     this.benfilService.addConditionTypes(conditionTypesByRuleType);
+    this.dedAppliesService.addConditionTypes(conditionTypesByRuleType);
+    this.customOverrideService.addConditionTypes(conditionTypesByRuleType);
 
     return conditionTypesByRuleType as Map<string, Map<string, string>>;
   }

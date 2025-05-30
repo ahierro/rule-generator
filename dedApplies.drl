@@ -1,0 +1,27 @@
+ 
+
+//XX 
+rule "XX" 
+    when 
+        $pbri : BenefitResolverProcedureInput( 
+            request != null, 
+            recoPayerId in ("REC0600", "REC0820", "REC0510"), 
+            request["EPISODE.EPISODE_INSURANCE.MemberNum"] matches "^(GMJ|T7B|T9B|JNH|SEG).*", 
+            request[EncounterConsts.Episode.EpisodeInsurance.GroupNum] == "76411406", 
+            message  == "76411406"
+            inNetwork == true,
+            procedureCode == "76411406", 
+            payerId == "76411406", 
+            $insurances: request["EPISODE_INSURANCE"] != null, 
+            (revCode >= 350 && revCode <= 359) || revCode in (402,483) || (revCode >= 610 && revCode <= 619) 
+		) 
+ 
+        DalMap( 
+            this["PlanDesc"] == "BC EXCLUSIVE TIERED PLAN" 
+        ) from $insurances 
+ 
+    then 
+        $pbri.setDedApplies(true); 
+        retract($pbri); 
+end 
+ 
