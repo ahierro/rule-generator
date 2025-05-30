@@ -128,12 +128,19 @@ export class AppComponent implements OnInit {
 
     const rule = {
       ticketNumber: this.ruleForm.value.ticketNumber,
-      name: this.ruleForm.value.ruleName,
+      name: this.parseRuleName(this.ruleForm.value.ruleName),
       ruleConditions: ruleConditions
     } as Rule;
     this.rule = this.ruleGeneratorService.generateRule(rule,scope);
   }
-
+  parseRuleName(rule: string): string {
+    // if there is " character, replace it with ' character
+    if (rule.includes('"')) {
+      return rule.replace(/"/g, "'");
+    }else {
+      return rule;
+    }
+  }
   generateTest(): void {
     if (this.ruleForm.valid) {
       let ded = undefined;
